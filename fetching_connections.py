@@ -1,9 +1,9 @@
 from bs4 import BeautifulSoup
+from imdb import Cinemagoer
+import streamlit as st
 import pandas as pd
 import requests
-import streamlit as st
 
-from imdb import Cinemagoer
 
 cg = Cinemagoer()
 

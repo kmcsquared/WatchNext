@@ -1,9 +1,9 @@
 # Helper functions for app
-import gzip
+import streamlit as st
 import pandas as pd
 import numpy as np
-import streamlit as st
-import fetching_ratings as fr
+import gzip
+
 from datetime import datetime
 from urllib.request import urlopen
 
