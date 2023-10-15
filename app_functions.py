@@ -15,7 +15,7 @@ from urllib.request import urlopen
 # TO-DO: Compute series with combined metric
 
 # Download latest IMDB datasets
-@st.cache_data(show_spinner=False)    # Run only once (when session begins)
+# @st.cache_data(show_spinner=False)    # Run only once (when session begins)
 def unzip_and_load_datasets():
 
     '''
