@@ -135,5 +135,3 @@ for searched_tconst in searched_tconsts_with_unwatched_connections['tconst']:
         cols[idx % n_cols].image(st.session_state['image_{}'.format(tconst)], caption=content_caption)
 
     st.divider()
-
-st.cache_data.clear()
