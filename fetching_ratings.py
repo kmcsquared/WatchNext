@@ -11,7 +11,7 @@ def get_soup(id_user):
 
     url_user = '{}/user/{}/ratings?sort=date_added,desc&ratingFilter=0&mode=detail&ref_=undefined&lastPosition=0'.format(url_imdb, id_user)
     r = requests.get(url_user)
-    soup = BeautifulSoup(r.content, 'html5lib')
+    soup = BeautifulSoup(r.content, 'html.parser')
 
     return soup
 
