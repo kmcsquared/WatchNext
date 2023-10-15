@@ -23,33 +23,36 @@ st.write(
     '''
 )
 
-# Entering user ID
-imdb_user_id = st.text_input('Enter your IMDB ID:', value='ur103598244', placeholder='ur...')
+# # Entering user ID
+# imdb_user_id = st.text_input('Enter your IMDB ID:', value='ur103598244', placeholder='ur...')
 
-# Check validity of ID
-try:
-    # Help out if user only enters numeric part of ID
-    if imdb_user_id.isnumeric():
-        imdb_user_id = 'ur' + imdb_user_id
+# # Check validity of ID
+# try:
+#     # Help out if user only enters numeric part of ID
+#     if imdb_user_id.isnumeric():
+#         imdb_user_id = 'ur' + imdb_user_id
 
-    with st.spinner('Fetching your IMDB ratings...'):
-        user_ratings = fr.get_user_ratings(imdb_user_id)
-        st.success('All ratings by *{}* have been found!'.format(imdb_user_id))
+#     with st.spinner('Fetching your IMDB ratings...'):
+#         user_ratings = fr.get_user_ratings(imdb_user_id)
+#         st.success('All ratings by *{}* have been found!'.format(imdb_user_id))
 
-except:
-    st.markdown(
-        '''
-        Enter a valid IMDB ID. To find it, go to your IMDB activity and look at the URL.
-        Your ID starts with ***ur*** and is followed by digits.
-        '''
-    )
+# except:
+#     st.markdown(
+#         '''
+#         Enter a valid IMDB ID. To find it, go to your IMDB activity and look at the URL.
+#         Your ID starts with ***ur*** and is followed by digits.
+#         '''
+#     )
 
+with st.spinner('Fetching your IMDB ratings...'):
+    user_ratings = fr.get_user_ratings()
+    st.success('All your ratings by have been found!')
 
 # Start load procedure
 with st.spinner('Downloading latest films/series data:'):
     # Get necessary datasets for searching 
     titles, _, ratings = af.unzip_and_load_datasets()
-    st.success('Latest film and series data has been loaded.'.format(imdb_user_id))
+    st.success('Latest film and series data has been loaded.')
 
 with st.spinner('Preparing WatchNext rankings'):
     # Add user ratings to titles
@@ -132,3 +135,5 @@ for searched_tconst in searched_tconsts_with_unwatched_connections['tconst']:
         cols[idx % n_cols].image(st.session_state['image_{}'.format(tconst)], caption=content_caption)
 
     st.divider()
+
+st.cache_data.clear()

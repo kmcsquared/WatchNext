@@ -82,7 +82,7 @@ def get_ordered_connections(content, num_content_to_display, exclude_videogames=
 
     # Search through non-videogames. Connections could still be videogames though.
     if exclude_videogames:
-        content_subset = content[(content['titleType'] != 'videoGame')]
+        content_subset = content.loc[content['titleType'] != 'videoGame', :]
     else:
         content_subset = content.copy()
 
