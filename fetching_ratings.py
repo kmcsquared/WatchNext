@@ -55,7 +55,7 @@ def get_next_page(current_num_page, soup):
     # Scrape next page
     current_url = '{}{}'.format(url_imdb, next_page) 
     r = requests.get(current_url)
-    soup = BeautifulSoup(r.content, 'html5lib')
+    soup = BeautifulSoup(r.content, 'html.parser')
 
     current_num_page += 1
     # print('Switching to ratings page {}: {}'.format(current_num_page, current_url))
