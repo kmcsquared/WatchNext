@@ -83,6 +83,7 @@ def extract_info(soup):
 
     return tconst_and_ratings
 
+@st.cache_data(show_spinner=False)      # Run only once (when session begins)
 def get_user_ratings(id_user='ur103598244'):
 
     soup = get_soup(id_user)

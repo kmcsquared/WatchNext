@@ -15,7 +15,7 @@ from urllib.request import urlopen
 # TO-DO: Compute series with combined metric
 
 # Download latest IMDB datasets
-@st.cache_resource(show_spinner=False)  # Run only once (when session begins)
+@st.cache_data(show_spinner=False)  # Run only once (when session begins)
 def unzip_and_load_datasets():
 
     '''
@@ -35,113 +35,117 @@ def unzip_and_load_datasets():
         fStream = gzip.GzipFile(fileobj=inmemory, mode='rb')
         df = pd.read_csv(fStream, sep='\t', low_memory=False)
         datasets.append(df)
-        df.to_csv('IMDB_Data/{}.csv'.format(key))
+        # df.to_csv('IMDB_Data/{}.csv'.format(key))
 
     return datasets
 
-# Loading all content is needed once per content type
-# to allow to normalise with respect to all titles
-# @st.cache_data(show_spinner=False)
-def load_content_type(content_choice, titles):
+# Get ratings and votes for each title
+@st.cache_data(show_spinner=False)
+def merge_ratings(df_imdb_titles, df_imdb_ratings):
+    return df_imdb_titles.merge(df_imdb_ratings, on='tconst')   
 
-    # Get content by type
-    if content_choice == 'Non Series':
-        return titles[~titles['titleType'].isin(['tvSeries', 'tvMiniSeries', 'tvEpisode', 'videoGame'])]
-    elif content_choice == 'Series':
-        return titles[titles['titleType'].isin(['tvSeries', 'tvMiniSeries'])]
-    elif content_choice == 'Videogames':
-        return titles[titles['titleType'].isin(['videoGame'])]
+# Get episode info
+@st.cache_data(show_spinner=False)
+def merge_episode_info(df_imdb_episodes, df_imdb_titles):
+    return df_imdb_episodes.merge(df_imdb_titles[['tconst', 'runtimeMinutes', 'averageRating', 'numVotes']], on='tconst')
 
+@st.cache_data(show_spinner=False)
+def normalise_content(df):
 
-# Compute normalisation of scores
-# @st.cache_data(show_spinner=False)
-def normalise_scores(df_score, score_col='newScore'):
-
+    # Create score metric
+    df['score'] = df['averageRating'] * df['numVotes']
     # Normalise scores in 0-10 range
-    normalised_metric = 10 * (df_score[score_col] - df_score[score_col].min()) / (df_score[score_col].max() - df_score[score_col].min())
-        # Apply sigmoid function (out of 10)
-    normalised_metric = 10 / (1 + np.exp(-normalised_metric))
-        
+    df['score'] = 10 * (df['score'] - df['score'].min()) / (df['score'].max() - df['score'].min())
+    # Apply sigmoid function (out of 10)
+    df['score'] = 10 / (1 + np.exp(-df['score']))
     # Score is mean of average rating and normalised metric
-    df_score[score_col] = (df_score['averageRating'] + normalised_metric) / 2
-    df_score = df_score.sort_values(score_col, ascending=False)
-    df_score[score_col] = round(df_score[score_col], 2)
+    df['score'] = (df['score'] + df['averageRating']) / 2
+    df = df.sort_values('score', ascending=False)
+    df['score'] = round(df['score'], 2)
+    df.index = np.arange(1, 1+len(df))
 
-    # Discard those with averageRating == 10 (outliers)
-    # scores_10 = df_score[df_score['averageRating'] == 10]
-    # if len(scores_10) != 0:
-    #     index_first_10 = scores_10.index[0]
-    #     votes_first_10 = df_score.loc[index_first_10, 'numVotes']
-    #     df_score = df_score[df_score['numVotes'] > votes_first_10]
+    return df
 
-    # df_score.index = np.arange(1, 1+len(df_score))
+@st.cache_data(show_spinner=False)
+def calculate_episode_metric(df_imdb_episodes):
 
-    return df_score
-  
-# Add scores to dataset
-# @st.cache_data(show_spinner=False)
-def compute_scores(df_content, ratings):
+    # Group episodes by the series to which they belong and calculate their mean score
+    df_episode_score = df_imdb_episodes.groupby('parentTconst').agg({'score': 'mean'})
+    df_episode_score.reset_index(inplace=True)
 
-    # Merge ratings
-    df_content = df_content.merge(ratings, on='tconst')
+    df_episode_score.rename(columns={'score': 'episodeScore'}, inplace=True)
+    return df_episode_score
 
-    # Create score column
-    df_content['score'] = df_content['averageRating'] * df_content['numVotes']
-    # Sort by score
-    df_content = df_content.sort_values('score', ascending=False)
+@st.cache_data(show_spinner=False)
+def calculate_runtime_metric(df_imdb_episodes):
 
-    df_content = normalise_scores(df_content)
-    return df_content
+    # Fix cases with errors runtimes
+    errors_list = df_imdb_episodes.loc[df_imdb_episodes['runtimeMinutes'].str.isnumeric() == False, 'runtimeMinutes'].unique()
+    df_runtime_errors = df_imdb_episodes.loc[df_imdb_episodes['runtimeMinutes'].isin(errors_list)]
+   
+    # If series has episodes without Nan runtimes, use mean of the series (otherwise use mean of all series)
+    df_runtime_without_errors = df_imdb_episodes[~df_imdb_episodes['runtimeMinutes'].isin(errors_list)].copy()
+    df_runtime_without_errors['runtimeMinutes'] = df_runtime_without_errors['runtimeMinutes'].astype(int)
 
+    # Mean of all episode lengths
+    mean_runtime = df_runtime_without_errors['runtimeMinutes'].mean()
 
-# @st.cache_data(show_spinner=False)
-def prepare_content(titles, user_ratings, ratings):
-    # Add user ratings to titles
-    titles = titles.merge(user_ratings, how='left')     # Left to keep all unrated titles
+    # Mean of episode length by series
+    df_mean_runtime_series = df_runtime_without_errors.groupby('parentTconst').agg({'runtimeMinutes': 'mean'})
+    df_mean_runtime_series.reset_index(inplace=True)
 
-    # Split titles by content type
-    non_series = load_content_type('Non Series', titles)
-    series = load_content_type('Series', titles)
-    videogames = load_content_type('Videogames', titles)
+    # 1. Use existing series info (use how='left' to keep series without runtimes for step 2)
+    df_runtime_errors = df_runtime_errors.merge(df_mean_runtime_series[['parentTconst', 'runtimeMinutes']], how='left', on='parentTconst')
+    df_runtime_errors.drop('runtimeMinutes_x', axis=1, inplace=True)
+    df_runtime_errors.rename(columns={'runtimeMinutes_y': 'runtimeMinutes'}, inplace=True)
 
-    # Compute scores for each content type
-    non_series = compute_scores(non_series, ratings)
-    series = compute_scores(series, ratings)
-    videogames = compute_scores(videogames, ratings)
+    # 2. If there is no info for series, runtimeMinutes columns will have become Nans -> use global mean
+    df_runtime_errors.loc[df_runtime_errors['runtimeMinutes'].isna(), 'runtimeMinutes'] = mean_runtime
 
-    # Merge all content types together
-    content = pd.concat([non_series, series, videogames])
-    content.sort_values('score', ascending=False, inplace=True)
+    # Calculate total runtime per series
+    df_runtime_score = pd.concat([df_runtime_without_errors, df_runtime_errors])
+    print('# EPISODES AFTER REBUILDING EPISODE RUNTIMES:', len(df_runtime_score))   # Should match value_counts in the cells above
+    df_runtime_score = df_runtime_score.groupby('parentTconst').agg({'runtimeMinutes': 'sum'})
+    df_runtime_score.rename(columns={'runtimeMinutes': 'totalRuntime'}, inplace=True)
+    df_runtime_score['totalRuntime'] = round(df_runtime_score['totalRuntime']).astype(int)
+    df_runtime_score.reset_index(inplace=True)
 
-    return content
+    return df_runtime_score
 
+st.cache_data(show_spinner=False)
+def calculate_combined_metric(df_series_score, df_episode_score, df_runtime_score):
 
-    
-# Selecting content choice
-def select_content_by_show_choice(df_content, show_choice, df_user_ratings):
+    # Merge score with episode score
+    df_combined = pd.merge(
+        left=df_series_score,
+        right=df_episode_score,
+        left_on='tconst',
+        right_on='parentTconst'
+    )
 
-    '''
-    df_content: DataFrame containing normalised scores
-    show_choice: one of (All, Rated, Unrated)
-    '''
+    # Merge with runtime score
+    df_combined = df_combined.merge(df_runtime_score, on='parentTconst')
+    df_combined.drop(columns='parentTconst', inplace=True)
 
-    if show_choice == 'All':
-        return df_content
-    
-    if show_choice == 'Rated':
-        return df_content.merge(df_user_ratings, on='tconst')
-        
-    if show_choice == 'Unrated':
-        return df_content[~df_content['tconst'].isin(df_user_ratings['tconst'])]
+    df_combined = df_combined[
+        [
+            'tconst',
+            'titleType',
+            'primaryTitle',
+            'originalTitle',
+            'startYear',
+            'endYear',
+            'averageRating',
+            'numVotes',
+            'seriesScore',
+            'episodeScore',
+            'totalRuntime',
+        ]
+    ]
 
+    # Using numVotes to combine with runtime score
+    df_combined['combinedMetric'] = (df_combined['seriesScore'] * df_combined['episodeScore']) / 2 # Normal version
+    # df_combined = normalise_scores(df_combined, score_col='combinedMetric')
+    df_combined.sort_values('combinedMetric', ascending=False, inplace=True)
 
-# Show only finished series
-def show_finished_series(df_score):
-
-    # Remove unfinished series
-    finished_series = df_score[df_score['endYear'] != '\\N']
-    # Remove series that end after current year
-    current_year = datetime.now().year
-    finished_series = finished_series[finished_series['endYear'].astype(int) <= current_year]
-
-    return finished_series
+    return df_combined
