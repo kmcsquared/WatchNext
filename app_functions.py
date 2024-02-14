@@ -56,7 +56,11 @@ def merge_episode_info(df_imdb_episodes, df_imdb_titles):
     return df_imdb_episodes.merge(df_imdb_titles[['tconst', 'runtimeMinutes', 'averageRating', 'numVotes']], on='tconst')
 
 @st.cache_data(show_spinner=False)
-def normalise_content(df):
+def normalise_content(df, content_type):
+
+    # Remove outlier ratings
+    if content_type in ['Series', 'Films']:
+        df = df.loc[df['numVotes'] >= 5000]
 
     # Create score metric
     df['score'] = df['averageRating'] * df['numVotes']
@@ -164,7 +168,6 @@ def display_covers(df_content, content_type=None):
     for idx, tconst in enumerate(df_content['tconst']):
         # Fetch image if not retrieved already
         if tconst not in st.session_state:
-            st.session_state[tconst] = True
             content = cg.get_movie(tconst[2:])
 
             # TO-DO: Get image link from the web scraping
@@ -193,12 +196,22 @@ def display_covers(df_content, content_type=None):
                 '-{}'.format(end_year) if content_type == 'Series' else ''
             )
 
-            st.session_state['caption_{}'.format(tconst)] = content_caption
+            # Store caption (everything except idx)
+            st.session_state['caption_{}'.format(tconst)] = ''.join(content_caption.split(sep='. ', maxsplit=1)[-1])
+
+            # Mark tconst as seen after image and caption have been stored
+            st.session_state[tconst] = True
 
         # Add a new row when end of row is reached
         if idx % n_cols == 0:
             cols = st.columns(n_cols)
 
-        cols[idx % n_cols].image(st.session_state['image_{}'.format(tconst)], caption=st.session_state['caption_{}'.format(tconst)])
+        cols[idx % n_cols].image(
+            image=st.session_state['image_{}'.format(tconst)], 
+            caption='{}. {}'.format(
+                idx+1, 
+                st.session_state['caption_{}'.format(tconst)]
+            )
+        )
 
     st.divider()
