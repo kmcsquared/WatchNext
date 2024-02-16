@@ -2,7 +2,9 @@ import streamlit as st
 import numpy as np
 import pandas as pd
 import app_functions as af
+
 from fetching_ratings import get_user_ratings
+from fetching_connections import get_ordered_connections
 from datetime import datetime
 
 
@@ -75,8 +77,8 @@ if 'loaded_data' not in st.session_state:
         # Load user ratings
         seen_tconst = get_user_ratings()['tconst']
 
-    keys = ['films', 'series', 'user_ratings']
-    values = [df_films, df_series, seen_tconst]
+    keys = ['all_titles', 'films', 'series', 'user_ratings']
+    values = [df_imdb_titles, df_films, df_series, seen_tconst]
 
     for k, v in zip(keys, values):
         if k not in st.session_state:
@@ -199,3 +201,34 @@ num_series = st.slider(
 df_series = df_series[:num_series]
 st.dataframe(df_series, use_container_width=True)
 af.display_covers(df_series, content_type='Series')
+
+# Connections
+
+st.header('Connections')
+
+show_connections = st.toggle(
+    label='Show connections',
+    value=False
+)
+
+if show_connections:
+    cols = ['tconst', 'primaryTitle', 'titleType', 'startYear', 'endYear', 'runtimeMinutes', 'numVotes', 'averageRating', 'score']
+
+    df_connection_films = st.session_state['films'].copy()
+    df_connection_films.rename(columns={'filmScore': 'score'}, inplace=True)
+    df_connection_films['endYear'] = np.nan
+    df_connection_films = df_connection_films[cols]
+
+    df_connection_series = st.session_state['series'].copy()
+    df_connection_series.rename(columns={'seriesScore': 'score'}, inplace=True)
+    df_connection_series = df_connection_series[cols]
+
+    df_ranked = pd.concat([df_connection_films, df_connection_series], ignore_index=True)
+    df_ranked = df_ranked.sort_values('score', ascending=False)
+
+    st.session_state['all_titles'].to_csv('df_all_titles.csv')
+
+    with st.spinner('Searching connections...'):
+        connections = get_ordered_connections(df_ranked, st.session_state['all_titles'], max_num_titles=10, seen_tconst=watched_tconst)
+
+    st.dataframe(connections, use_container_width=True)

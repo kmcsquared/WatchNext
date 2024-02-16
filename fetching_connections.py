@@ -4,6 +4,8 @@ import streamlit as st
 import pandas as pd
 import requests
 
+import app_functions as af
+
 
 cg = Cinemagoer()
 
@@ -13,19 +15,26 @@ cg = Cinemagoer()
 @st.cache_resource(show_spinner=False)
 def get_num_connections(tconst, connection_type):
 
+    '''
+    This is done through web-scraping instead of using the Cinemagoer connections
+    since Cinemagoer does not give the real number. Because IMDB has an expandable
+    button to show beyond 5 prequels/sequels, Cinemagoer only shows 5 connections
+    as a maximum. 
+    '''
+
     url_user = 'https://www.imdb.com/title/{}/movieconnections/'.format(tconst)
     user_agent = {'User-agent': 'Mozilla/5.0'}
     r = requests.get(url_user, headers=user_agent)
-    soup = BeautifulSoup(r.content, 'html5lib')
+    soup = BeautifulSoup(r.content, 'html.parser')
 
     if connection_type == 'followed by':
         connection_type = 'followed_by' 
 
-    connection = soup.find('option', {'value':'#'+connection_type})
+    connection = soup.find('option', {'value':'#'+connection_type})     # # e.g. <option value="#follows">Follows (1)</option>
     if connection is None:
         return 0
     
-    txt = connection.text
+    txt = connection.text       # Follows (1)
     num_connections = int(txt[txt.find('(')+1:txt.find(')')])
 
     return num_connections
@@ -74,103 +83,144 @@ def find_title_connections(tconst, connection_type):
 
     return ps
 
-@st.cache_resource(show_spinner=False)
-def get_ordered_connections(content, num_content_to_display, exclude_videogames=True):
+@st.cache_data(show_spinner=False)
+def get_ordered_connections(content_ranked, all_content, max_num_titles, seen_tconst):
 
     '''
-    Return at least num_content_to_display connections as well as the index i of the last tconst searched
+    Return at least max_num_titles unwatched titles.
+
+    content_ranked: Post-processed data with normalised scores
+    all_content: Unprocessed data
+                    - Because content_ranked uses series and films with more than 5000
+                    votes for score normalisation, all_content is needed to retrieve 
+                    those connections with less than 5000 votes which would be lost.
+                    Similarly, df_films
     '''
-     
-    # Create mini DataFrames to concat. Each one has the correct order of the connections.
-    # These contain title and its connections.
+
+    # Create mini DataFrames for each title and their connections. Each one has the correct order of the connections.
+    # Then concat all of them together to get a DataFrame of connections.
     mini_dfs = []
-
-    # Search through non-videogames. Connections could still be videogames though.
-    if exclude_videogames:
-        content_subset = content.loc[content['titleType'] != 'videoGame']
-    else:
-        content_subset = content.copy()
 
     # Avoid searching for connections of a title 
     # that has been previously searched.
-    searched_tconsts = []
+    searched_tconsts = set()
 
     # If tconst has a prequel, tconst 'follows' the prequel. When listing the prequel 
     # in the table, it will say that the prequel is 'Followed by' tconst (and viceversa).
     # e.g. Terminator 2 'follows' The Terminator. The Terminator is 'Followed by' the Terminator 2.
     # e.g. Breaking Bad is 'followed by' El Camino. El Camino 'Follows' Breaking Bad.
-    connection_types = {'follows': 'Followed by', 'followed by': 'Follows'}
+    connection_types = {
+        'follows': 'Followed by', 
+        'followed by': 'Follows'
+    }
 
     # Go through each title in subset
-    num_titles = 0
+    num_titles_with_connections = 0
 
-    for i, tconst in enumerate(content_subset['tconst']):
+    for i, tconst in enumerate(content_ranked['tconst']):
+
+        tconst_title = all_content.loc[all_content['tconst'] == tconst, 'primaryTitle'].values[0]
         
         if tconst in searched_tconsts:
-            print('{}. NOT searching... {}'.format(i+1, content_subset.loc[content_subset['tconst'] == tconst, 'originalTitle'].values[0]))
+            print('{}. NOT searching... {} ({})'.format(i+1, tconst_title, tconst), end='\n\n')
         else:
-            searched_tconsts.append(tconst)
-            
+            print('{}. Searching... {} ({})'.format(i+1, tconst_title, tconst), end='\n\n')
+            searched_tconsts.add(tconst)
+
             # Put tconst already in resulting dataframe
-            mini_df = content_subset.loc[content_subset['tconst'] == tconst,:]
-            print('{}. Searching... {} ({})'.format(i+1, content_subset.loc[content_subset['tconst'] == tconst, 'originalTitle'].values[0], tconst))
-
+            mini_df = all_content.loc[all_content['tconst'] == tconst].copy()
+            
             # Iterate through sequels and prequels
-            for ct in connection_types.keys():
-                num_connections = get_num_connections(tconst, ct)   # Web-scrape number of connections
+            for conn_type in connection_types.keys():
+                search_round = 1
+                num_connections = get_num_connections(tconst, conn_type)   # Web-scrape number of connections
+                
+                # Connection tconst are returned in the same order as on IMDB
+                connection_tconsts = find_title_connections(tconst, conn_type)
+                
+                print(
+                    '{} - Search round {} ({}/{}): {}'.format(
+                        conn_type,
+                        search_round,
+                        len(connection_tconsts),
+                        num_connections, 
+                        connection_tconsts
+                    ), 
+                    end='\n\n' if conn_type == 'followed by' else '\n'
+                )
 
-                # If connections are found
-                if num_connections != 0:
-                    connection_tconsts = find_title_connections(tconst, ct) # Get list of prequel(s) and sequel(s)
-                    searched_tconsts += connection_tconsts  # Mark connections as seen
-                    connection_rows = content[content['tconst'].isin(connection_tconsts)]   # Get connections data
-                    
-                    # Connection rows is derived from a merge between content and ratings.
+                if len(connection_tconsts) != 0:
+                    for conn_tconst in connection_tconsts:
+                        searched_tconsts.add(conn_tconst)   # Mark connections as seen
+
+                    connection_rows = all_content.loc[all_content['tconst'].isin(connection_tconsts)].copy()
+
+                    # Keep order of the list connection_tconsts in DataFrame
+                    # https://stackoverflow.com/questions/23414161/pandas-isin-with-output-keeping-order-of-input-list
+                    connection_rows['tconst_order'] = pd.Categorical(
+                        values=connection_rows['tconst'],
+                        categories=connection_tconsts,
+                        ordered=True
+                    )
+
+                    connection_rows.sort_values('tconst_order', inplace=True)
+
+
+                    # Connection rows is derived from a merge between all_content and ratings.
                     # Number of connections could be 1, but connection rows could be 0 for a 
                     # title that has not yet been launched and/or received any ratings.
                     if len(connection_rows) != 0:
 
-                        # Define type of connection
+                        # Define type of connection (e.g. Follows The Dark Knight (tconst)))
                         connection_rows['connection'] = '{} {} ({})'.format(
-                            connection_types[ct], 
-                            content_subset.loc[content_subset['tconst'] == tconst, 'originalTitle'].values[0],
+                            connection_types[conn_type],
+                            tconst_title,
                             tconst
                         )
 
-                        # Connections of connections
-                        # Not all connections are retrieved right now for the original title (only first 5 are shown,
-                        # rest are collapsed with a 'see more' button). 
-                        # Therefore we need to iterate through all connections to reach all of them.
-                        print('{} --- {} --- Connections found: {} {} --- Total connections: {}'.format(tconst, ct, len(connection_rows), list(connection_rows['tconst']), num_connections))
-
-                        # Keep searching connections until total amount is reached
+                        # Not all connections of tconst are retrieved through Cinemagoer due to an 
+                        # expandable button. Therefore we need to iterate through the connections' 
+                        # connections until the number of connections of tconst is reached.
                         while len(connection_rows) < num_connections:
-                            # Oldest 5 connections (both ways) have been retrieved already since IMDB displays connections chronologically.
-                            # Case 6+ prequels: Look for 5th and its successors --- Case 6+ sequels: Look for 5th and its successors
+                            
+                            # First 5 prequels/sequels are retrieved initially
+                            # In the case of 6+ prequels/sequels, get 5th and find its successors
                             last_tconst = connection_rows.iloc[-1]['tconst']
-                            print('Searching connections of {} ({})'.format(connection_rows.loc[connection_rows['tconst'] == last_tconst, 'primaryTitle'].values[0], last_tconst))
-                            
-                            missed_connection_tconsts = find_title_connections(last_tconst, 'followed by')
-                            missed_connection_tconsts = [mct for mct in missed_connection_tconsts]
-                            print('Missed connection tconsts:', missed_connection_tconsts)
-                            searched_tconsts += missed_connection_tconsts
-                            missed_connection_rows = content[content['tconst'].isin(missed_connection_tconsts)]
+                            last_tconst_title = connection_rows.loc[connection_rows['tconst'] == last_tconst, 'primaryTitle'].values[0]
+                            print('Searching connections of {} ({})'.format(last_tconst_title, last_tconst))
 
-                            # It could be the case that a connection is found through the API, but it is not in the dataset.
-                            # If that state is reached, do not continue search.
+                            # Connections hidden in the expandable button which follow the last one retrieved
+                            missed_connection_tconsts = find_title_connections(last_tconst, 'followed by')
+                            # missed_connection_tconsts = [mct for mct in missed_connection_tconsts if mct not in connection_rows['tconst']]
+                            print('Missed connection tconsts:', missed_connection_tconsts)
+                            for mct in missed_connection_tconsts:
+                                searched_tconsts.add(mct)
+
+                            missed_connection_rows = all_content.loc[all_content['tconst'].isin(missed_connection_tconsts)].copy()
+
+                            # It could be the case that a connection is found through the API, but it is not in the dataset due to
+                            # non-existent ratings. If that state is reached, do not continue search.
                             if len(missed_connection_rows) == 0:
+                                print('Lost connections:', missed_connection_tconsts, end='\n\n')
                                 break
-                            
-                            # Define type of connection
+
+                            # Define type of connection (e.g. Follows The Dark Knight (tconst)))
                             missed_connection_rows['connection'] = '{} {} ({})'.format(
-                                connection_types[ct],
-                                content_subset.loc[content_subset['tconst'] == tconst, 'originalTitle'].values[0],
+                                connection_types[conn_type],
+                                tconst_title,
                                 tconst
                             )
 
                             connection_rows = pd.concat([connection_rows, missed_connection_rows])  # Update connections
-                            print('Connection tconsts:', list(connection_rows['tconst']))
-                            print('{} --- {} --- Connections found: {} --- Total connections: {}\n'.format(last_tconst, ct, len(connection_rows), num_connections))
+                            search_round += 1
+                            print('{} - Search round {}: {}\n\n'.format(conn_type, search_round, list(connection_rows['tconst'])))
+                            # print('Connection tconsts:', list(connection_rows['tconst']))
+                            print('{} --- {} --- Connections found: {}/{}\n'.format(
+                                last_tconst, 
+                                conn_type, 
+                                len(connection_rows), 
+                                num_connections)
+                            )
 
                             '''
                             21. Searching... Star Wars: Episode V - The Empire Strikes Back (tt0080684)
@@ -183,26 +233,27 @@ def get_ordered_connections(content, num_content_to_display, exclude_videogames=
                             '''
 
                     # Avoid concating if connections and original have been watched already.
-                    # Add only unwatched connections.
-                    if connection_rows['userRating'].isnull().any():
-                        mini_df = pd.concat([mini_df, connection_rows[connection_rows['userRating'].isnull()]])
+                    is_unwatched_connection = ~(connection_rows['tconst'].isin(seen_tconst))
+                    if is_unwatched_connection.sum() > 0:
+                        unwatched_connections = connection_rows.loc[is_unwatched_connection]
+                        mini_df = pd.concat([mini_df, unwatched_connections])
 
             # If title and its connections have all been seen: skip it and don't add to the watchlist
             # Otherwise order by year
-            if mini_df['userRating'].isnull().any():
-                mini_df['index'] = mini_df.index
-                mini_df.sort_values(['startYear', 'index'], inplace=True)
+            is_unwatched_connection = ~(mini_df['tconst'].isin(seen_tconst))
+            if is_unwatched_connection.sum() > 0:
+                # mini_df['index'] = mini_df.index
+                # mini_df = mini_df.sort_values(['startYear', 'index'])
                 mini_dfs.append(mini_df)
-
-                num_titles += (mini_df['userRating'].isnull().sum() - len(mini_df[mini_df['titleType'] == 'videoGame']))
-                print('Content unwatched:', num_titles)
-                if num_titles >= num_content_to_display:
+                num_titles_with_connections += 1
+                print('Number of titles unseen:', num_titles_with_connections, end='\n\n')
+                if num_titles_with_connections >= max_num_titles:
                     break
 
-    # Put together all DataFrames of titles and their connections
     connections_ordered = pd.concat(mini_dfs)
-    cols_of_interest = ['tconst', 'primaryTitle', 'connection', 'titleType', 'startYear', 'endYear', 'runtimeMinutes', 'numVotes', 'averageRating', 'score', 'userRating']
+    print(connections_ordered)
+    cols_of_interest = ['tconst', 'primaryTitle', 'connection', 'titleType', 'startYear', 'endYear', 'runtimeMinutes', 'numVotes', 'averageRating']
     connections_ordered = connections_ordered[cols_of_interest]
     connections_ordered.reset_index(drop=True, inplace=True)
 
-    return connections_ordered, i
+    return connections_ordered
