@@ -60,7 +60,7 @@ def normalise_content(df, content_type):
 
     # Remove outlier ratings
     if content_type in ['Series', 'Films']:
-        df = df.loc[df['numVotes'] >= 5000]
+        df = df.loc[df['numVotes'] >= 5000].copy()
 
     # Create score metric
     df['score'] = df['averageRating'] * df['numVotes']
@@ -165,6 +165,7 @@ def display_covers(df_content, content_type=None):
     # Display content
     cg = Cinemagoer()   # Get access to IMDB API for retrieving photos
     n_cols = 5
+
     for idx, tconst in enumerate(df_content['tconst']):
         # Fetch image if not retrieved already
         if tconst not in st.session_state:
@@ -213,5 +214,73 @@ def display_covers(df_content, content_type=None):
                 st.session_state['caption_{}'.format(tconst)]
             )
         )
+
+    st.divider()
+
+
+@st.cache_data(show_spinner=False)
+def display_covers_connections(df_content):
+
+    # Display content
+    cg = Cinemagoer()   # Get access to IMDB API for retrieving photos
+    n_cols = 5
+
+    # Titles which are not connections are null, iterate through them
+    # and show images of connection iteratively
+    nan_indices = df_content.index[df_content['connection'].isna()].tolist()
+    nan_ranges = zip(nan_indices, nan_indices[1:])
+    
+    for idxA, idxB in nan_ranges:
+        original_title = df_content.iloc[idxA]['primaryTitle']
+        original_tconst = df_content.iloc[idxA]['tconst']
+
+        st.header('{} ({})'.format(original_title, original_tconst))
+
+        # If unseen single title
+        if idxB-idxA == 1:
+            connection_tconsts = [df_content.loc[idxA, 'tconst']]
+        else:
+            connection_tconsts = df_content.loc[idxA+1:idxB-1, 'tconst']
+
+        for idx, tconst in enumerate(connection_tconsts):
+            # Fetch image if not retrieved already
+            if tconst not in st.session_state:
+                content = cg.get_movie(tconst[2:])
+
+                # TO-DO: Get image link from the web scraping
+                # Read and resize image: https://stackoverflow.com/questions/7391945/how-do-i-read-image-data-from-a-url-in-python
+                img_data = requests.get(content['full-size cover url']).content
+                content_image = Image.open(BytesIO(img_data)).resize((1200,1800))
+                
+                # Save variables obtained through requests in cache
+                st.session_state['image_{}'.format(tconst)] = content_image
+                
+                tconst_info = df_content.loc[df_content['tconst'] == tconst].values[0]
+                primary_title = tconst_info[1]
+                title_type = tconst_info[3]
+                
+                content_caption = '{}. {} ({})'.format(
+                    idx+1, 
+                    primary_title,
+                    title_type
+                )
+
+                # Store caption (everything except idx)
+                st.session_state['caption_{}'.format(tconst)] = ''.join(content_caption.split(sep='. ', maxsplit=1)[-1])
+
+                # Mark tconst as seen after image and caption have been stored
+                st.session_state[tconst] = True
+
+            # Add a new row when end of row is reached
+            if idx % n_cols == 0:
+                cols = st.columns(n_cols)
+
+            cols[idx % n_cols].image(
+                image=st.session_state['image_{}'.format(tconst)], 
+                caption='{}. {}'.format(
+                    idx+1, 
+                    st.session_state['caption_{}'.format(tconst)]
+                )
+            )
 
     st.divider()

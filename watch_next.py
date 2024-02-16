@@ -226,9 +226,8 @@ if show_connections:
     df_ranked = pd.concat([df_connection_films, df_connection_series], ignore_index=True)
     df_ranked = df_ranked.sort_values('score', ascending=False)
 
-    st.session_state['all_titles'].to_csv('df_all_titles.csv')
-
     with st.spinner('Searching connections...'):
-        connections = get_ordered_connections(df_ranked, st.session_state['all_titles'], max_num_titles=10, seen_tconst=watched_tconst)
+        connections = get_ordered_connections(df_ranked, st.session_state['all_titles'], max_num_titles=5, seen_tconst=watched_tconst)
 
     st.dataframe(connections, use_container_width=True)
+    af.display_covers_connections(connections)
