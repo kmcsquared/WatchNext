@@ -284,3 +284,116 @@ def display_covers_connections(df_content):
             )
 
     st.divider()
+
+
+def get_new_episodes(titles, episodes, df_user_ratings):
+
+    '''
+    Use year of user ratings to look for episodes released after that year
+    '''
+
+    # Only keep episodes of watched series
+    episodes_of_watched_series = episodes.loc[episodes['parentTconst'].isin(df_user_ratings['tconst'])].copy()
+    # Get primaryTitle of series
+    episodes_of_watched_series = pd.merge(episodes_of_watched_series, titles[['tconst', 'primaryTitle']], left_on='parentTconst', right_on='tconst')
+    episodes_of_watched_series.rename(columns={'primaryTitle': 'parentTitle', 'tconst_x': 'tconst'}, inplace=True)
+    episodes_of_watched_series.drop(columns='tconst_y', inplace=True)
+
+    # Get episode name
+    episodes_of_watched_series = pd.merge(episodes_of_watched_series, titles[['tconst', 'primaryTitle']], on='tconst')
+
+    # Find unaired pilots, special episodes...
+    unexpected_numbers = [-1,0]
+    unexpected_episodes = episodes_of_watched_series.loc[(episodes_of_watched_series['seasonNumber'].isin(unexpected_numbers)) | (episodes_of_watched_series['episodeNumber'].isin(unexpected_numbers))]
+
+    # Get year of episode
+    episodes_of_watched_series = pd.merge(
+        left=episodes_of_watched_series,
+        right=titles[['tconst', 'startYear']],
+        on='tconst'
+    )
+
+    # Some unreleased episodes will show as '\\N', so convert them to -1
+    episodes_of_watched_series.loc[~(episodes_of_watched_series['startYear'].str.isnumeric()), 'startYear'] = -1
+
+    # Merge with user ratings
+    episodes_of_watched_series = pd.merge(
+        left=episodes_of_watched_series,
+        right=df_user_ratings[['tconst', 'dateRating']],
+        left_on='parentTconst',
+        right_on='tconst'
+    )
+
+    episodes_of_watched_series.rename(columns={'tconst_x': 'tconst'}, inplace=True)
+    episodes_of_watched_series.drop(columns='tconst_y', inplace=True)
+
+    episodes_of_watched_series['startYear'] = episodes_of_watched_series['startYear'].astype(int)
+    episodes_of_watched_series['newEpisode'] = episodes_of_watched_series['startYear'] > episodes_of_watched_series['dateRating']
+
+    # Sort by series, season and episode number
+    for col in ['seasonNumber', 'episodeNumber']:
+        episodes_of_watched_series.loc[episodes_of_watched_series[col] == '\\N', col] = -1
+
+    episodes_of_watched_series['seasonNumber'] = episodes_of_watched_series['seasonNumber'].astype(int)
+    episodes_of_watched_series['episodeNumber'] = episodes_of_watched_series['episodeNumber'].astype(int)
+
+    episodes_of_watched_series.sort_values(['parentTconst', 'seasonNumber', 'episodeNumber'], inplace=True)
+    
+    unwatched_episodes = episodes_of_watched_series.loc[episodes_of_watched_series['newEpisode']]
+
+    return unwatched_episodes, unexpected_episodes
+
+
+@st.cache_data(show_spinner=False)
+def display_covers_unwatched_episodes(df_new_episodes):
+
+    # Display content
+    cg = Cinemagoer()   # Get access to IMDB API for retrieving photos
+    n_cols = 5
+
+    for parent_tconst in df_new_episodes['parentTconst'].unique():
+        
+        df_content = df_new_episodes.loc[df_new_episodes['parentTconst'] == parent_tconst].copy()
+        parent_title = df_content['parentTitle'].values[0]
+        st.header('{} ({})'.format(parent_title, parent_tconst))
+
+        for idx, tconst in enumerate(df_content['tconst']):
+            # Fetch image if not retrieved already
+            if tconst not in st.session_state:
+                content = cg.get_movie(tconst[2:])
+
+                # TO-DO: Get image link from the web scraping
+                # Read and resize image: https://stackoverflow.com/questions/7391945/how-do-i-read-image-data-from-a-url-in-python
+                img_data = requests.get(content['full-size cover url']).content
+                content_image = Image.open(BytesIO(img_data)).resize((1200,1200))
+                
+                # Save variables obtained through requests in cache
+                st.session_state['image_{}'.format(tconst)] = content_image
+                
+                tconst_info = df_content.loc[df_content['tconst'] == tconst].iloc[0]
+                num_season = tconst_info['seasonNumber']
+                num_episode = tconst_info['episodeNumber']
+                episode_title = tconst_info['primaryTitle']
+                
+                content_caption = 'S{}E{} - {}'.format(
+                    num_season, 
+                    num_episode,
+                    episode_title
+                )
+
+                # Store caption (everything except idx)
+                st.session_state['caption_{}'.format(tconst)] = content_caption
+
+                # Mark tconst as seen after image and caption have been stored
+                st.session_state[tconst] = True
+
+            # Add a new row when end of row is reached
+            if idx % n_cols == 0:
+                cols = st.columns(n_cols)
+
+            cols[idx % n_cols].image(
+                image=st.session_state['image_{}'.format(tconst)], 
+                caption=st.session_state['caption_{}'.format(tconst)]
+            )
+
+    st.divider()

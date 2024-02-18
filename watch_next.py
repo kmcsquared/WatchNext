@@ -75,10 +75,10 @@ if 'loaded_data' not in st.session_state:
 
     with st.spinner('Loading user ratings...'):
         # Load user ratings
-        seen_tconst = get_user_ratings()['tconst']
+        df_user_ratings = get_user_ratings()
 
-    keys = ['all_titles', 'films', 'series', 'user_ratings']
-    values = [df_imdb_titles, df_films, df_series, seen_tconst]
+    keys = ['all_titles', 'episodes', 'films', 'series', 'user_ratings']
+    values = [df_imdb_titles, df_imdb_episodes, df_films, df_series, df_user_ratings]
 
     for k, v in zip(keys, values):
         if k not in st.session_state:
@@ -116,7 +116,7 @@ df_series = df_series[
     ]
 ]
 
-watched_tconst = st.session_state['user_ratings'].copy()
+watched_tconst = st.session_state['user_ratings']['tconst'].copy()
 
 # Films
 st.header('FILMS')
@@ -231,3 +231,34 @@ if show_connections:
 
     st.dataframe(connections, use_container_width=True)
     af.display_covers_connections(connections)
+
+
+# Unwatched episodes
+
+# TO-DO? Web scrape exact date (DD/MM/YYYY) of last episode of each series instead of using year only
+# since that could cause to miss new episodes released within same year of rating
+    
+st.header('Episodes you might have missed')
+
+show_missed_episodes = st.toggle(
+    label='Show missed episodes',
+    value=False
+)
+
+if show_missed_episodes:
+
+    with st.spinner('Looking for new episodes...'):
+        # Because all_titles (IMDB titles) was merged with IMDB ratings,
+        # you only get titles that have ratings. This is good because you 
+        # avoid series which have been announced but not released yet.
+        missed_episodes = af.get_new_episodes(
+            titles=st.session_state['all_titles'],
+            episodes=st.session_state['episodes'],
+            df_user_ratings=st.session_state['user_ratings']
+        )
+
+    df_new_episodes = missed_episodes[0]
+    df_strange_episodes = missed_episodes[1]
+
+    st.dataframe(df_new_episodes, use_container_width=True)
+    af.display_covers_unwatched_episodes(df_new_episodes)

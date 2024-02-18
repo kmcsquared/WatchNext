@@ -251,7 +251,7 @@ def get_ordered_connections(content_ranked, all_content, max_num_titles, seen_tc
                     break
 
     connections_ordered = pd.concat(mini_dfs)
-    print(connections_ordered)
+    # print(connections_ordered)
     cols_of_interest = ['tconst', 'primaryTitle', 'connection', 'titleType', 'startYear', 'endYear', 'runtimeMinutes', 'numVotes', 'averageRating']
     connections_ordered = connections_ordered[cols_of_interest]
     connections_ordered.reset_index(drop=True, inplace=True)
