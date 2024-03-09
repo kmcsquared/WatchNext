@@ -94,7 +94,6 @@ def get_ordered_connections(content_ranked, all_content, max_num_titles, seen_tc
                     - Because content_ranked uses series and films with more than 5000
                     votes for score normalisation, all_content is needed to retrieve 
                     those connections with less than 5000 votes which would be lost.
-                    Similarly, df_films
     '''
 
     # Create mini DataFrames for each title and their connections. Each one has the correct order of the connections.
@@ -117,14 +116,22 @@ def get_ordered_connections(content_ranked, all_content, max_num_titles, seen_tc
     # Go through each title in subset
     num_titles_with_connections = 0
 
+    # Print out to the screen title being searched
+    log = st.empty()
+
     for i, tconst in enumerate(content_ranked['tconst']):
 
         tconst_title = all_content.loc[all_content['tconst'] == tconst, 'primaryTitle'].values[0]
         
         if tconst in searched_tconsts:
             print('{}. NOT searching... {} ({})'.format(i+1, tconst_title, tconst), end='\n\n')
+            with log.container():
+                st.write('{}. NOT searching... {} ({})'.format(i+1, tconst_title, tconst))
         else:
             print('{}. Searching... {} ({})'.format(i+1, tconst_title, tconst), end='\n\n')
+            with log.container():
+                st.write('{}. Searching... {} ({})'.format(i+1, tconst_title, tconst))
+
             searched_tconsts.add(tconst)
 
             # Put tconst already in resulting dataframe

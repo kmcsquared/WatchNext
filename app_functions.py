@@ -81,6 +81,7 @@ def calculate_episode_metric(df_imdb_episodes):
 
     # Group episodes by the series to which they belong and calculate their mean score
     df_episode_score = df_imdb_episodes.groupby('parentTconst').agg({'score': 'mean'})
+    df_episode_score['score'] = round(df_episode_score['score'], 2)
     df_episode_score.reset_index(inplace=True)
 
     return df_episode_score
@@ -225,6 +226,8 @@ def display_covers_connections(df_content):
     cg = Cinemagoer()   # Get access to IMDB API for retrieving photos
     n_cols = 5
 
+    # TO-DO: If title whose connections is being searched has not been watched, display it too.
+
     # Titles which are not connections are null, iterate through them
     # and show images of connection iteratively
     nan_indices = df_content.index[df_content['connection'].isna()].tolist()
@@ -234,7 +237,7 @@ def display_covers_connections(df_content):
         original_title = df_content.iloc[idxA]['primaryTitle']
         original_tconst = df_content.iloc[idxA]['tconst']
 
-        st.header('{} ({})'.format(original_title, original_tconst))
+        st.subheader('{} ({})'.format(original_title, original_tconst))
 
         # If unseen single title
         if idxB-idxA == 1:
@@ -247,7 +250,6 @@ def display_covers_connections(df_content):
             if tconst not in st.session_state:
                 content = cg.get_movie(tconst[2:])
 
-                # TO-DO: Get image link from the web scraping
                 # Read and resize image: https://stackoverflow.com/questions/7391945/how-do-i-read-image-data-from-a-url-in-python
                 img_data = requests.get(content['full-size cover url']).content
                 content_image = Image.open(BytesIO(img_data)).resize((1200,1800))
@@ -304,7 +306,8 @@ def get_new_episodes(titles, episodes, df_user_ratings):
 
     # Find unaired pilots, special episodes...
     unexpected_numbers = [-1,0]
-    unexpected_episodes = episodes_of_watched_series.loc[(episodes_of_watched_series['seasonNumber'].isin(unexpected_numbers)) | (episodes_of_watched_series['episodeNumber'].isin(unexpected_numbers))]
+    unexpected_episodes = episodes_of_watched_series.loc[(episodes_of_watched_series['seasonNumber'].isin(unexpected_numbers)) | (episodes_of_watched_series['episodeNumber'].isin(unexpected_numbers))].copy()
+    unexpected_episodes.reset_index(inplace=True)
 
     # Get year of episode
     episodes_of_watched_series = pd.merge(
@@ -340,6 +343,7 @@ def get_new_episodes(titles, episodes, df_user_ratings):
     episodes_of_watched_series.sort_values(['parentTconst', 'seasonNumber', 'episodeNumber'], inplace=True)
     
     unwatched_episodes = episodes_of_watched_series.loc[episodes_of_watched_series['newEpisode']]
+    unwatched_episodes.reset_index(inplace=True)
 
     return unwatched_episodes, unexpected_episodes
 
@@ -355,7 +359,7 @@ def display_covers_unwatched_episodes(df_new_episodes):
         
         df_content = df_new_episodes.loc[df_new_episodes['parentTconst'] == parent_tconst].copy()
         parent_title = df_content['parentTitle'].values[0]
-        st.header('{} ({})'.format(parent_title, parent_tconst))
+        st.subheader('{} ({})'.format(parent_title, parent_tconst))
 
         for idx, tconst in enumerate(df_content['tconst']):
             # Fetch image if not retrieved already

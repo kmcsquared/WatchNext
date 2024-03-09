@@ -204,7 +204,7 @@ af.display_covers(df_series, content_type='Series')
 
 # Connections
 
-st.header('Connections')
+st.header('Connections of watched content')
 
 show_connections = st.toggle(
     label='Show connections',
@@ -212,26 +212,38 @@ show_connections = st.toggle(
 )
 
 if show_connections:
-    cols = ['tconst', 'primaryTitle', 'titleType', 'startYear', 'endYear', 'runtimeMinutes', 'numVotes', 'averageRating', 'score']
 
-    df_connection_films = st.session_state['films'].copy()
-    df_connection_films.rename(columns={'filmScore': 'score'}, inplace=True)
-    df_connection_films['endYear'] = np.nan
-    df_connection_films = df_connection_films[cols]
+    num_connections = st.number_input(
+        label='Select number of titles with connections to display.',
+        min_value=5,
+        max_value=20,
+        value=None,
+        step=5
+    )
 
-    df_connection_series = st.session_state['series'].copy()
-    df_connection_series.rename(columns={'seriesScore': 'score'}, inplace=True)
-    df_connection_series = df_connection_series[cols]
+    if num_connections is not None:
+        cols = ['tconst', 'primaryTitle', 'titleType', 'startYear', 'endYear', 'runtimeMinutes', 'numVotes', 'averageRating', 'score']
 
-    df_ranked = pd.concat([df_connection_films, df_connection_series], ignore_index=True)
-    df_ranked = df_ranked.sort_values('score', ascending=False)
+        df_connection_films = st.session_state['films'].copy()
+        df_connection_films.rename(columns={'filmScore': 'score'}, inplace=True)
+        df_connection_films['endYear'] = np.nan
+        df_connection_films = df_connection_films[cols]
 
-    with st.spinner('Searching connections...'):
-        connections = get_ordered_connections(df_ranked, st.session_state['all_titles'], max_num_titles=5, seen_tconst=watched_tconst)
+        df_connection_series = st.session_state['series'].copy()
+        df_connection_series.rename(columns={'seriesScore': 'score'}, inplace=True)
+        df_connection_series = df_connection_series[cols]
 
-    st.dataframe(connections, use_container_width=True)
-    af.display_covers_connections(connections)
+        df_ranked = pd.concat([df_connection_films, df_connection_series], ignore_index=True)
+        df_ranked = df_ranked.sort_values('score', ascending=False)
 
+        with st.spinner('Searching connections...'):
+            connections = get_ordered_connections(df_ranked, st.session_state['all_titles'], max_num_titles=num_connections, seen_tconst=watched_tconst)
+
+        st.dataframe(connections, use_container_width=True)
+        af.display_covers_connections(connections)
+
+else:
+    st.divider()
 
 # Unwatched episodes
 
@@ -258,7 +270,26 @@ if show_missed_episodes:
         )
 
     df_new_episodes = missed_episodes[0]
-    df_strange_episodes = missed_episodes[1]
 
     st.dataframe(df_new_episodes, use_container_width=True)
-    af.display_covers_unwatched_episodes(df_new_episodes)
+
+    # Print names of missed episodes
+    for parent_tconst in df_new_episodes['parentTconst'].unique():
+        df = df_new_episodes.loc[df_new_episodes['parentTconst'] == parent_tconst]
+        st.subheader(df['parentTitle'].iloc[0])
+        for episode in df.values:
+            st.write(
+                'S{}E{} - {} ({})'.format(
+                    episode[3],
+                    episode[4],
+                    episode[6],
+                    episode[7]
+                )
+            )
+            
+    # af.display_covers_unwatched_episodes(df_new_episodes)
+
+    # st.header('Other special episodes')
+    # df_strange_episodes = missed_episodes[1]
+    # st.dataframe(df_strange_episodes, use_container_width=True)
+    # af.display_covers_unwatched_episodes(df_strange_episodes)
