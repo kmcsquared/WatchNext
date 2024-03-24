@@ -7,10 +7,6 @@ from fetching_ratings import get_user_ratings
 from fetching_connections import get_ordered_connections
 from datetime import datetime
 
-
-# TO-DO: Add connections
-
-
 # Page metadata
 st.set_page_config(
     page_title='WatchNext',
@@ -237,10 +233,15 @@ if show_connections:
         df_ranked = df_ranked.sort_values('score', ascending=False)
 
         with st.spinner('Searching connections...'):
-            connections = get_ordered_connections(df_ranked, st.session_state['all_titles'], max_num_titles=num_connections, seen_tconst=watched_tconst)
+            connections = get_ordered_connections(
+                content_ranked=df_ranked, 
+                all_content=st.session_state['all_titles'], 
+                max_num_titles=num_connections, 
+                seen_tconst=watched_tconst
+            )
 
         st.dataframe(connections, use_container_width=True)
-        af.display_covers_connections(connections)
+        af.display_covers_connections(connections, watched_tconst)
 
 else:
     st.divider()

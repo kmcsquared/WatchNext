@@ -220,7 +220,7 @@ def display_covers(df_content, content_type=None):
 
 
 @st.cache_data(show_spinner=False)
-def display_covers_connections(df_content):
+def display_covers_connections(df_content, watched_tconst):
 
     # Display content
     cg = Cinemagoer()   # Get access to IMDB API for retrieving photos
@@ -238,11 +238,15 @@ def display_covers_connections(df_content):
         original_tconst = df_content.iloc[idxA]['tconst']
 
         st.subheader('{} ({})'.format(original_title, original_tconst))
+        # st.write(original_tconst in set(watched_tconst))
+        # st.write(idxA, idxB)
 
         # If unseen single title
         if idxB-idxA == 1:
             connection_tconsts = [df_content.loc[idxA, 'tconst']]
-        else:
+        elif original_tconst not in set(watched_tconst):
+            connection_tconsts = df_content.loc[idxA:idxB-1, 'tconst']
+        elif original_tconst in set(watched_tconst):
             connection_tconsts = df_content.loc[idxA+1:idxB-1, 'tconst']
 
         for idx, tconst in enumerate(connection_tconsts):
