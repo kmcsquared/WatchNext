@@ -199,7 +199,7 @@ def display_covers(df_content, content_type=None):
             )
 
             # Store caption (everything except idx)
-            st.session_state['caption_{}'.format(tconst)] = ''.join(content_caption.split(sep='. ', maxsplit=1)[-1])
+            st.session_state['display_covers_caption_{}'.format(tconst)] = ''.join(content_caption.split(sep='. ', maxsplit=1)[-1])
 
             # Mark tconst as seen after image and caption have been stored
             st.session_state[tconst] = True
@@ -212,7 +212,7 @@ def display_covers(df_content, content_type=None):
             image=st.session_state['image_{}'.format(tconst)], 
             caption='{}. {}'.format(
                 idx+1, 
-                st.session_state['caption_{}'.format(tconst)]
+                st.session_state['display_covers_caption_{}'.format(tconst)]
             )
         )
 
@@ -272,7 +272,7 @@ def display_covers_connections(df_content, watched_tconst):
                 )
 
                 # Store caption (everything except idx)
-                st.session_state['caption_{}'.format(tconst)] = ''.join(content_caption.split(sep='. ', maxsplit=1)[-1])
+                st.session_state['display_covers_connections_caption_{}'.format(tconst)] = ''.join(content_caption.split(sep='. ', maxsplit=1)[-1])
 
                 # Mark tconst as seen after image and caption have been stored
                 st.session_state[tconst] = True
@@ -285,7 +285,7 @@ def display_covers_connections(df_content, watched_tconst):
                 image=st.session_state['image_{}'.format(tconst)], 
                 caption='{}. {}'.format(
                     idx+1, 
-                    st.session_state['caption_{}'.format(tconst)]
+                    st.session_state['display_covers_connections_caption_{}'.format(tconst)]
                 )
             )
 
@@ -390,7 +390,7 @@ def display_covers_unwatched_episodes(df_new_episodes):
                 )
 
                 # Store caption (everything except idx)
-                st.session_state['caption_{}'.format(tconst)] = content_caption
+                st.session_state['display_covers_unwatched_episodes_caption_{}'.format(tconst)] = content_caption
 
                 # Mark tconst as seen after image and caption have been stored
                 st.session_state[tconst] = True
@@ -401,7 +401,7 @@ def display_covers_unwatched_episodes(df_new_episodes):
 
             cols[idx % n_cols].image(
                 image=st.session_state['image_{}'.format(tconst)], 
-                caption=st.session_state['caption_{}'.format(tconst)]
+                caption=st.session_state['display_covers_unwatched_episodes_caption_{}'.format(tconst)]
             )
 
     st.divider()

@@ -1,0 +1,43 @@
+,tconst,primaryTitle,connection,titleType,startYear,endYear,runtimeMinutes,numVotes,averageRating
+0,tt0108778,Friends,,tvSeries,1994,2004,22,1084222,8.9
+1,tt0583508,Friends: The One Before the Last One - Ten Years of Friends,Follows Friends (tt0108778),tvSpecial,2004,\N,22,1368,8.7
+2,tt0133093,The Matrix,,movie,1999,\N,136,2045508,8.7
+3,tt0366179,The Second Renaissance Part I,Follows The Matrix (tt0133093),tvEpisode,2003,\N,9,8374,8.0
+4,tt0350934,Final Flight of the Osiris,Follows The Matrix (tt0133093),tvEpisode,2003,\N,9,8431,7.5
+5,tt0368575,The Second Renaissance Part II,Follows The Matrix (tt0133093),tvEpisode,2003,\N,10,6899,8.0
+6,tt0277828,Enter the Matrix,Follows The Matrix (tt0133093),videoGame,2003,\N,\N,4083,6.9
+7,tt0390244,The Matrix Online,Follows The Matrix (tt0133093),videoGame,2005,\N,\N,592,6.6
+8,tt4574334,Stranger Things,,tvSeries,2016,2025,60,1329171,8.7
+9,tt0102926,The Silence of the Lambs,,movie,1991,\N,118,1543193,8.6
+10,tt2243973,Hannibal,Follows The Silence of the Lambs (tt0102926),tvSeries,2013,2015,45,275681,8.5
+11,tt2861424,Rick and Morty,,tvSeries,2013,\N,23,598607,9.1
+12,tt0073486,One Flew Over the Cuckoo's Nest,,movie,1975,\N,133,1069628,8.7
+13,tt7423538,Ratched,Follows One Flew Over the Cuckoo's Nest (tt0073486),tvSeries,2020,2020,60,70178,7.3
+14,tt0088763,Back to the Future,,movie,1985,\N,116,1302394,8.5
+15,tt0101042,Back to the Future,Follows Back to the Future (tt0088763),tvSeries,1991,1993,23,1869,6.4
+16,tt4961498,Back to the Future: The Game - 30th Anniversary Edition,Follows Back to the Future (tt0088763),videoGame,2015,\N,\N,850,8.0
+17,tt0110357,The Lion King,,movie,1994,\N,88,1138455,8.5
+18,tt3793630,The Lion Guard,Follows The Lion King (tt0110357),tvSeries,2015,2019,30,2661,6.4
+19,tt2560140,Attack on Titan,,tvSeries,2013,2023,24,505044,9.1
+20,tt1190634,The Boys,,tvSeries,2019,\N,60,643773,8.7
+21,tt0141842,The Sopranos,,tvSeries,1999,2007,60,467437,9.2
+22,tt8110232,The Many Saints of Newark,Follows The Sopranos (tt0141842),movie,2021,\N,120,63019,6.3
+23,tt2085059,Black Mirror,,tvSeries,2011,\N,60,637122,8.7
+24,tt9495224,Black Mirror: Bandersnatch,Follows Black Mirror (tt2085059),movie,2018,\N,90,136007,7.1
+25,tt0078748,Alien,,movie,1979,\N,117,947046,8.5
+26,tt0090605,Aliens,Follows Alien (tt0078748),movie,1986,\N,137,760745,8.4
+27,tt0103644,Alien³,Follows Alien (tt0078748),movie,1992,\N,114,318548,6.4
+28,tt0118583,Alien Resurrection,Follows Alien (tt0078748),movie,1997,\N,109,262717,6.2
+29,tt0082971,Raiders of the Lost Ark,,movie,1981,\N,115,1034661,8.4
+30,tt1462764,Indiana Jones and the Dial of Destiny,Follows Raiders of the Lost Ark (tt0082971),movie,2023,\N,154,196135,6.5
+31,tt0245429,Spirited Away,,movie,2001,\N,125,845445,8.6
+32,tt0253474,The Pianist,,movie,2002,\N,150,908484,8.5
+33,tt1520211,The Walking Dead,,tvSeries,2010,2022,45,1077864,8.1
+34,tt9859436,The Walking Dead: The Ones Who Live,Follows The Walking Dead (tt1520211),tvSeries,2024,2024,60,19347,8.4
+35,tt0114709,Toy Story,,movie,1995,\N,81,1065568,8.3
+36,tt10167262,Lamp Life,Follows Toy Story (tt0114709),short,2020,\N,7,4169,6.7
+37,tt8111088,The Mandalorian,,tvSeries,2019,\N,40,584144,8.7
+38,tt0317248,City of God,,movie,2002,\N,130,798754,8.6
+39,tt0303341,Golden Gate (Palace II),Followed by City of God (tt0317248),tvEpisode,2000,\N,21,160,7.4
+40,tt0364801,City of Men,Follows City of God (tt0317248),tvSeries,2002,2018,30,2956,8.2
+41,tt0870090,City of Men,Follows City of God (tt0317248),movie,2007,\N,106,16275,7.2

@@ -263,4 +263,6 @@ def get_ordered_connections(content_ranked, all_content, max_num_titles, seen_tc
     connections_ordered = connections_ordered[cols_of_interest]
     connections_ordered.reset_index(drop=True, inplace=True)
 
+    connections_ordered.to_csv('Ordered_Connections.csv')
+
     return connections_ordered
