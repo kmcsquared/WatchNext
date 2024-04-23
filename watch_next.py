@@ -212,7 +212,7 @@ if show_connections:
     num_connections = st.number_input(
         label='Select number of titles with connections to display.',
         min_value=5,
-        max_value=20,
+        max_value=50,
         value=None,
         step=5
     )
@@ -234,7 +234,6 @@ if show_connections:
 
         with st.spinner('Searching connections...'):
             connections = get_ordered_connections(
-                content_ranked=df_ranked, 
                 all_content=st.session_state['all_titles'], 
                 max_num_titles=num_connections, 
                 seen_tconst=watched_tconst

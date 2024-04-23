@@ -79,21 +79,17 @@ def find_title_connections(tconst, connection_type):
     if connection_type in connections:
         for connection in connections[connection_type]:
                 connection_id = 'tt' + connection.movieID
-                ps.append(connection_id)
+                # Avoid duplicate prequels/sequels on IMDB
+                if connection_id not in ps:
+                    ps.append(connection_id)
 
     return ps
 
 @st.cache_data(show_spinner=False)
-def get_ordered_connections(content_ranked, all_content, max_num_titles, seen_tconst):
+def get_ordered_connections(all_content, max_num_titles, seen_tconst):
 
     '''
     Return at least max_num_titles unwatched titles.
-
-    content_ranked: Post-processed data with normalised scores
-    all_content: Unprocessed data
-                    - Because content_ranked uses series and films with more than 5000
-                    votes for score normalisation, all_content is needed to retrieve 
-                    those connections with less than 5000 votes which would be lost.
     '''
 
     # Create mini DataFrames for each title and their connections. Each one has the correct order of the connections.
@@ -119,7 +115,8 @@ def get_ordered_connections(content_ranked, all_content, max_num_titles, seen_tc
     # Print out to the screen title being searched
     log = st.empty()
 
-    for i, tconst in enumerate(content_ranked['tconst']):
+    # Iterate from oldest seen to most recently seen
+    for i, tconst in enumerate(seen_tconst[::-1]):
 
         tconst_title = all_content.loc[all_content['tconst'] == tconst, 'primaryTitle'].values[0]
         
