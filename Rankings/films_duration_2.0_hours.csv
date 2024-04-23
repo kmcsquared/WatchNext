@@ -1,0 +1,101 @@
+,tconst,titleType,primaryTitle,startYear,runtimeMinutes,averageRating,numVotes,filmScore
+0,tt0078748,movie,Alien,1979,117,8.5,949558,9.01
+1,tt0118799,movie,Life Is Beautiful,1997,116,8.6,742666,8.88
+2,tt0075314,movie,Taxi Driver,1976,114,8.2,919648,8.82
+3,tt0198781,movie,"Monsters, Inc.",2001,92,8.1,978149,8.8
+4,tt0054215,movie,Psycho,1960,109,8.5,717742,8.78
+5,tt0093058,movie,Full Metal Jacket,1987,116,8.3,789863,8.75
+6,tt0118715,movie,The Big Lebowski,1998,117,8.1,859779,8.7
+7,tt0382932,movie,Ratatouille,2007,111,8.1,823809,8.67
+8,tt0083658,movie,Blade Runner,1982,117,8.1,822528,8.66
+9,tt1010048,movie,Slumdog Millionaire,2008,120,8.0,877385,8.66
+10,tt1205489,movie,Gran Torino,2008,116,8.1,814541,8.66
+11,tt4633694,movie,Spider-Man: Into the Spider-Verse,2018,117,8.4,670509,8.65
+12,tt0892769,movie,How to Train Your Dragon,2010,98,8.1,799981,8.64
+13,tt0246578,movie,Donnie Darko,2001,113,8.0,849519,8.63
+14,tt0034583,movie,Casablanca,1942,102,8.5,605633,8.61
+15,tt2084970,movie,The Imitation Game,2014,114,8.0,824416,8.6
+16,tt0317705,movie,The Incredibles,2004,115,8.0,807895,8.59
+17,tt0457430,movie,Pan's Labyrinth,2006,118,8.2,702635,8.58
+18,tt0116282,movie,Fargo,1996,98,8.1,726103,8.55
+19,tt0117951,movie,Trainspotting,1996,93,8.1,725214,8.55
+20,tt0364569,movie,Oldboy,2003,120,8.3,635116,8.53
+21,tt2543164,movie,Arrival,2016,116,7.9,769984,8.48
+22,tt1504320,movie,The King's Speech,2010,118,8.0,707654,8.46
+23,tt0047396,movie,Rear Window,1954,112,8.5,521707,8.44
+24,tt1119646,movie,The Hangover,2009,100,7.7,845276,8.44
+25,tt1631867,movie,Edge of Tomorrow,2014,113,7.9,736193,8.44
+26,tt0126029,movie,Shrek,2001,90,7.9,733552,8.43
+27,tt0107048,movie,Groundhog Day,1993,101,8.0,684493,8.42
+28,tt1136608,movie,District 9,2009,112,7.9,716457,8.41
+29,tt1285016,movie,The Social Network,2010,120,7.8,758038,8.4
+30,tt0416449,movie,300,2006,117,7.6,863678,8.4
+31,tt0075148,movie,Rocky,1976,120,8.1,627973,8.4
+32,tt0440963,movie,The Bourne Ultimatum,2007,115,8.0,657988,8.38
+33,tt5013056,movie,Dunkirk,2017,106,7.8,739411,8.38
+34,tt0120735,movie,"Lock, Stock and Two Smoking Barrels",1998,107,8.1,615929,8.37
+35,tt0057012,movie,Dr. Strangelove or: How I Learned to Stop Worrying and Love the Bomb,1964,95,8.4,517683,8.37
+36,tt0071853,movie,Monty Python and the Holy Grail,1975,91,8.2,569910,8.35
+37,tt0780504,movie,Drive,2011,100,7.8,703902,8.33
+38,tt5027774,movie,"Three Billboards Outside Ebbing, Missouri",2017,115,8.1,554611,8.26
+39,tt0365748,movie,Shaun of the Dead,2004,99,7.9,593542,8.21
+40,tt0454921,movie,The Pursuit of Happyness,2006,117,8.0,560301,8.21
+41,tt2562232,movie,Birdman or (The Unexpected Virtue of Ignorance),2014,119,7.7,666283,8.2
+42,tt0033467,movie,Citizen Kane,1941,119,8.3,465708,8.19
+43,tt0099785,movie,Home Alone,1990,103,7.7,652470,8.18
+44,tt2948356,movie,Zootopia,2016,108,8.0,545791,8.18
+45,tt2872718,movie,Nightcrawler,2014,117,7.8,604052,8.16
+46,tt1024648,movie,Argo,2012,120,7.7,638831,8.16
+47,tt0936501,movie,Taken,2008,90,7.7,634160,8.15
+48,tt0084787,movie,The Thing,1982,109,8.2,466162,8.13
+49,tt0240772,movie,Ocean's Eleven,2001,116,7.7,618661,8.12
+50,tt1659337,movie,The Perks of Being a Wallflower,2012,103,7.9,547638,8.12
+51,tt0258463,movie,The Bourne Identity,2002,119,7.8,575936,8.11
+52,tt0480249,movie,I Am Legend,2007,101,7.2,813510,8.09
+53,tt0347149,movie,Howl's Moving Castle,2004,119,8.2,448570,8.09
+54,tt0829482,movie,Superbad,2007,113,7.6,632043,8.08
+55,tt0206634,movie,Children of Men,2006,109,7.9,529105,8.08
+56,tt0470752,movie,Ex Machina,2014,108,7.7,588268,8.07
+57,tt0099487,movie,Edward Scissorhands,1990,105,7.9,523504,8.07
+58,tt0790636,movie,Dallas Buyers Club,2013,117,7.9,518977,8.06
+59,tt0101414,movie,Beauty and the Beast,1991,84,8.0,479346,8.03
+60,tt3170832,movie,Room,2015,118,8.1,450175,8.03
+61,tt1250777,movie,Kick-Ass,2010,117,7.6,592999,8.01
+62,tt1022603,movie,500 Days of Summer,2009,95,7.7,557259,8.01
+63,tt2294629,movie,Frozen,2013,102,7.4,663410,8.01
+64,tt0092005,movie,Stand by Me,1986,89,8.1,441287,8.0
+65,tt0103639,movie,Aladdin,1992,90,8.0,466301,8.0
+66,tt1156398,movie,Zombieland,2009,88,7.5,620821,8.0
+67,tt0091763,movie,Platoon,1986,120,8.1,439208,8.0
+68,tt1323594,movie,Despicable Me,2010,95,7.6,583877,8.0
+69,tt0449059,movie,Little Miss Sunshine,2006,101,7.8,517732,7.99
+70,tt3890160,movie,Baby Driver,2017,113,7.5,609841,7.98
+71,tt0032138,movie,The Wizard of Oz,1939,102,8.1,428348,7.97
+72,tt0093779,movie,The Princess Bride,1987,98,8.0,450723,7.96
+73,tt2245084,movie,Big Hero 6,2014,102,7.8,501230,7.95
+74,tt1670345,movie,Now You See Me,2013,115,7.2,707805,7.95
+75,tt1318514,movie,Rise of the Planet of the Apes,2011,105,7.6,558227,7.95
+76,tt6644200,movie,A Quiet Place,2018,90,7.5,583012,7.93
+77,tt0780536,movie,In Bruges,2008,107,7.9,461209,7.93
+78,tt1219289,movie,Limitless,2011,105,7.4,612018,7.92
+79,tt0120903,movie,X-Men,2000,104,7.3,646110,7.91
+80,tt1276104,movie,Looper,2012,119,7.4,602682,7.9
+81,tt0079470,movie,Life of Brian,1979,94,8.0,421705,7.89
+82,tt0095327,movie,Grave of the Fireflies,1988,89,8.5,310024,7.89
+83,tt2584384,movie,Jojo Rabbit,2019,108,7.9,440918,7.88
+84,tt1457767,movie,The Conjuring,2013,112,7.5,554371,7.87
+85,tt0398286,movie,Tangled,2010,100,7.7,493784,7.87
+86,tt0441773,movie,Kung Fu Panda,2008,92,7.6,521549,7.87
+87,tt0289879,movie,The Butterfly Effect,2004,113,7.6,520831,7.87
+88,tt0945513,movie,Source Code,2011,93,7.5,549419,7.86
+89,tt0335266,movie,Lost in Translation,2003,102,7.7,488321,7.86
+90,tt0372183,movie,The Bourne Supremacy,2004,108,7.7,486693,7.86
+91,tt0119654,movie,Men in Black,1997,98,7.3,612449,7.85
+92,tt5311514,movie,Your Name.,2016,106,8.4,319514,7.85
+93,tt0093773,movie,Predator,1987,107,7.8,454400,7.84
+94,tt0096283,movie,My Neighbor Totoro,1988,86,8.1,379788,7.84
+95,tt0816711,movie,World War Z,2013,116,7.0,718880,7.83
+96,tt0087332,movie,Ghostbusters,1984,105,7.8,449435,7.83
+97,tt1570728,movie,"Crazy, Stupid, Love.",2011,118,7.4,563894,7.83
+98,tt0088847,movie,The Breakfast Club,1985,97,7.8,436191,7.8
+99,tt0268380,movie,Ice Age,2002,81,7.5,518739,7.8

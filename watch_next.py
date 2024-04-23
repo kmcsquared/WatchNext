@@ -146,10 +146,12 @@ num_films = st.slider(
     step=5
 )
 
+# Save top 100 unwatched films
+df_films.loc[~(df_films['tconst'].isin(watched_tconst))].reset_index(drop=True)[:100].to_csv('Rankings/films_duration_{}_hours.csv'.format(max_duration_film))
+
 df_films = df_films[:num_films]
 st.dataframe(df_films, use_container_width=True)
 af.display_covers(df_films)
-
 
 
 # Series
@@ -193,6 +195,9 @@ num_series = st.slider(
     value=5,
     step=5
 )
+
+# Save top 100 unwatched series
+df_series.loc[~(df_series['tconst'].isin(watched_tconst))].reset_index(drop=True)[:100].to_csv('Rankings/series_duration_{}_days.csv'.format(max_duration_series))
 
 df_series = df_series[:num_series]
 st.dataframe(df_series, use_container_width=True)

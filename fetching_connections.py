@@ -260,6 +260,6 @@ def get_ordered_connections(all_content, max_num_titles, seen_tconst):
     connections_ordered = connections_ordered[cols_of_interest]
     connections_ordered.reset_index(drop=True, inplace=True)
 
-    connections_ordered.to_csv('Ordered_Connections.csv')
+    connections_ordered.to_csv('Rankings/connections.csv')
 
     return connections_ordered
