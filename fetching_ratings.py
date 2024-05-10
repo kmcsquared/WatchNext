@@ -51,8 +51,13 @@ def get_num_pages(soup):
             </div>
     '''
 
-    # Get number of films from: 1 - 100 of 241
-    num_films = list_pagination.find('span', {'class': 'pagination-range'}).text.strip()    # Get text
+    # Catch 403 Forbidden
+    try:
+        # Get number of films from: 1 - 100 of 241
+        num_films = list_pagination.find('span', {'class': 'pagination-range'}).text.strip()    # Get text
+    except AttributeError:
+        return '403 Forbidden'
+    
     num_films = num_films.split('of ')[-1]                                                  # '1 - 100 of 241' (get '241')
     num_films = int(num_films.replace(',', ''))                                             # e.g., convert '1,118' to 1118
 
@@ -117,34 +122,44 @@ def extract_info(soup):
 def get_user_ratings(id_user='ur103598244'):
 
     soup = get_soup(id_user)
-    current_num_page = 1
     num_pages = get_num_pages(soup)
 
-    while current_num_page <= num_pages:
-        print('Retrieving ratings from page {}/{}'.format(current_num_page, num_pages))
-        # Extract info about (max) 100 titles per pages
-        if current_num_page == 1:
-            tconst_and_ratings, tconst_and_years_of_rating = extract_info(soup)
-        else:
-            next_tconst_and_ratings, next_tconst_and_years_of_rating = extract_info(soup)
-            tconst_and_ratings.update(next_tconst_and_ratings)
-            tconst_and_years_of_rating.update(next_tconst_and_years_of_rating)
-        
-        print('Content retrieved:', len(tconst_and_ratings), end='\n\n')
+    if num_pages != '403 Forbidden':   # Catch 403 Forbidden
+        current_num_page = 1
+        while current_num_page <= num_pages:
+            print('Retrieving ratings from page {}/{}'.format(current_num_page, num_pages))
+            # Extract info about (max) 100 titles per pages
+            if current_num_page == 1:
+                tconst_and_ratings, tconst_and_years_of_rating = extract_info(soup)
+            else:
+                next_tconst_and_ratings, next_tconst_and_years_of_rating = extract_info(soup)
+                tconst_and_ratings.update(next_tconst_and_ratings)
+                tconst_and_years_of_rating.update(next_tconst_and_years_of_rating)
+            
+            print('Content retrieved:', len(tconst_and_ratings), end='\n\n')
 
-        # Move to the next page if not in last page yet
-        if current_num_page == num_pages:
-            break
-        
-        current_num_page, soup = get_next_page(current_num_page, soup)
+            # Move to the next page if not in last page yet
+            if current_num_page == num_pages:
+                break
+            
+            current_num_page, soup = get_next_page(current_num_page, soup)
 
-    df_user_ratings = pd.DataFrame.from_dict(tconst_and_ratings, orient='index')
-    df_user_ratings = df_user_ratings.reset_index().rename(columns={'index': 'tconst', 0: 'userRating'})
+        df_user_ratings = pd.DataFrame.from_dict(tconst_and_ratings, orient='index')
+        df_user_ratings = df_user_ratings.reset_index().rename(columns={'index': 'tconst', 0: 'userRating'})
 
-    df_dates_ratings = pd.DataFrame.from_dict(tconst_and_years_of_rating, orient='index')
-    df_dates_ratings = df_dates_ratings.reset_index().rename(columns={'index': 'tconst', 0: 'dateRating'})
+        df_dates_ratings = pd.DataFrame.from_dict(tconst_and_years_of_rating, orient='index')
+        df_dates_ratings = df_dates_ratings.reset_index().rename(columns={'index': 'tconst', 0: 'dateRating'})
 
-    df_user_ratings = pd.merge(df_user_ratings, df_dates_ratings, on='tconst')
+        df_user_ratings = pd.merge(df_user_ratings, df_dates_ratings, on='tconst')
+
+    else:
+
+        df_user_ratings = pd.read_csv('IMDB_Data/IMDB_Exported_Ratings.csv', index_col=0)
+        df_user_ratings['dateRating'] = df_user_ratings['Date Rated'].apply(lambda x: int(x[:4]))    # YYYY-MM-DD -> YYYY
+        df_user_ratings['tconst'] = df_user_ratings.index
+        df_user_ratings.rename(columns={'Your Rating':'userRating'}, inplace=True)
+        df_user_ratings = df_user_ratings[['tconst', 'userRating', 'dateRating']]
+        df_user_ratings.to_csv('df_user_ratings.csv')
 
     return df_user_ratings
         

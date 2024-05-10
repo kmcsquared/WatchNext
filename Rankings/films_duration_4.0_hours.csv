@@ -1,0 +1,101 @@
+,tconst,titleType,primaryTitle,startYear,runtimeMinutes,averageRating,numVotes,filmScore
+0,tt0078748,movie,Alien,1979,117,8.5,949832,9.01
+1,tt0245429,movie,Spirited Away,2001,125,8.6,848628,8.99
+2,tt0253474,movie,The Pianist,2002,150,8.5,911542,8.99
+3,tt0317248,movie,City of God,2002,130,8.6,800524,8.94
+4,tt0118799,movie,Life Is Beautiful,1997,116,8.6,742811,8.88
+5,tt0086250,movie,Scarface,1983,170,8.3,915895,8.87
+6,tt0066921,movie,A Clockwork Orange,1971,136,8.3,880920,8.84
+7,tt0095016,movie,Die Hard,1988,132,8.2,945122,8.84
+8,tt0075314,movie,Taxi Driver,1976,114,8.2,919958,8.82
+9,tt0198781,movie,"Monsters, Inc.",2001,92,8.1,978347,8.8
+10,tt0054215,movie,Psycho,1960,109,8.5,717917,8.78
+11,tt10872600,movie,Spider-Man: No Way Home,2021,148,8.2,878106,8.78
+12,tt1201607,movie,Harry Potter and the Deathly Hallows: Part 2,2011,130,8.1,947832,8.78
+13,tt0090605,movie,Aliens,1986,137,8.4,762620,8.78
+14,tt0211915,movie,Amélie,2001,122,8.3,793930,8.75
+15,tt0093058,movie,Full Metal Jacket,1987,116,8.3,790021,8.75
+16,tt0078788,movie,Apocalypse Now,1979,147,8.4,709719,8.71
+17,tt1392214,movie,Prisoners,2013,153,8.2,808833,8.71
+18,tt0118715,movie,The Big Lebowski,1998,117,8.1,859945,8.7
+19,tt3315342,movie,Logan,2017,137,8.1,830756,8.67
+20,tt0382932,movie,Ratatouille,2007,111,8.1,824207,8.67
+21,tt0083658,movie,Blade Runner,1982,117,8.1,822694,8.66
+22,tt0062622,movie,2001: A Space Odyssey,1968,149,8.3,719076,8.66
+23,tt0113277,movie,Heat,1995,170,8.3,718915,8.66
+24,tt1010048,movie,Slumdog Millionaire,2008,120,8.0,877504,8.66
+25,tt1205489,movie,Gran Torino,2008,116,8.1,814672,8.66
+26,tt1663202,movie,The Revenant,2015,156,8.0,873807,8.65
+27,tt4633694,movie,Spider-Man: Into the Spider-Verse,2018,117,8.4,670793,8.65
+28,tt0892769,movie,How to Train Your Dragon,2010,98,8.1,800177,8.64
+29,tt0246578,movie,Donnie Darko,2001,113,8.0,849703,8.63
+30,tt10811166,movie,The Kashmir Files,2022,170,8.6,573666,8.61
+31,tt0034583,movie,Casablanca,1942,102,8.5,605727,8.61
+32,tt2084970,movie,The Imitation Game,2014,114,8.0,824569,8.6
+33,tt0317705,movie,The Incredibles,2004,115,8.0,808111,8.59
+34,tt0457430,movie,Pan's Labyrinth,2006,118,8.2,702719,8.58
+35,tt0401792,movie,Sin City,2005,124,8.0,793589,8.57
+36,tt2024544,movie,12 Years a Slave,2013,134,8.1,741011,8.57
+37,tt1745960,movie,Top Gun: Maverick,2022,130,8.2,695595,8.57
+38,tt0116282,movie,Fargo,1996,98,8.1,726270,8.55
+39,tt0117951,movie,Trainspotting,1996,93,8.1,725347,8.55
+40,tt0405159,movie,Million Dollar Baby,2004,132,8.1,721462,8.54
+41,tt0364569,movie,Oldboy,2003,120,8.3,635329,8.53
+42,tt0469494,movie,There Will Be Blood,2007,158,8.2,640759,8.48
+43,tt2543164,movie,Arrival,2016,116,7.9,770305,8.48
+44,tt1504320,movie,The King's Speech,2010,118,8.0,707738,8.46
+45,tt0038650,movie,It's a Wonderful Life,1946,130,8.6,498943,8.46
+46,tt0073195,movie,Jaws,1975,124,8.1,659112,8.45
+47,tt1877832,movie,X-Men: Days of Future Past,2014,132,7.9,744822,8.45
+48,tt0758758,movie,Into the Wild,2007,148,8.1,657878,8.45
+49,tt0047396,movie,Rear Window,1954,112,8.5,521818,8.44
+50,tt1119646,movie,The Hangover,2009,100,7.7,845631,8.44
+51,tt0119488,movie,L.A. Confidential,1997,138,8.2,617524,8.44
+52,tt0381061,movie,Casino Royale,2006,144,8.0,694322,8.44
+53,tt1877830,movie,The Batman,2022,176,7.8,786225,8.44
+54,tt1631867,movie,Edge of Tomorrow,2014,113,7.9,736386,8.44
+55,tt0126029,movie,Shrek,2001,90,7.9,733745,8.43
+56,tt0107048,movie,Groundhog Day,1993,101,8.0,684738,8.42
+57,tt1136608,movie,District 9,2009,112,7.9,716536,8.41
+58,tt3783958,movie,La La Land,2016,128,8.0,670760,8.4
+59,tt1285016,movie,The Social Network,2010,120,7.8,758237,8.4
+60,tt0416449,movie,300,2006,117,7.6,863822,8.4
+61,tt1798709,movie,Her,2013,126,8.0,669057,8.4
+62,tt0075148,movie,Rocky,1976,120,8.1,628121,8.4
+63,tt1856101,movie,Blade Runner 2049,2017,164,8.0,664488,8.39
+64,tt0241527,movie,Harry Potter and the Sorcerer's Stone,2001,152,7.6,855628,8.39
+65,tt0440963,movie,The Bourne Ultimatum,2007,115,8.0,658054,8.38
+66,tt5013056,movie,Dunkirk,2017,106,7.8,739574,8.38
+67,tt0120735,movie,"Lock, Stock and Two Smoking Barrels",1998,107,8.1,616048,8.37
+68,tt0057012,movie,Dr. Strangelove or: How I Learned to Stop Worrying and Love the Bomb,1964,95,8.4,517893,8.37
+69,tt0304141,movie,Harry Potter and the Prisoner of Azkaban,2004,142,7.9,691211,8.37
+70,tt1074638,movie,Skyfall,2012,143,7.8,730853,8.36
+71,tt0114746,movie,12 Monkeys,1995,129,8.0,646471,8.36
+72,tt6966692,movie,Green Book,2018,130,8.2,570913,8.35
+73,tt0071853,movie,Monty Python and the Holy Grail,1975,91,8.2,570011,8.35
+74,tt0112641,movie,Casino,1995,178,8.2,563594,8.34
+75,tt2119532,movie,Hacksaw Ridge,2016,139,8.1,593586,8.33
+76,tt0454876,movie,Life of Pi,2012,127,7.9,666587,8.33
+77,tt0780504,movie,Drive,2011,100,7.8,704071,8.33
+78,tt1045658,movie,Silver Linings Playbook,2012,122,7.7,742502,8.32
+79,tt0421715,movie,The Curious Case of Benjamin Button,2008,166,7.8,695404,8.31
+80,tt3748528,movie,Rogue One: A Star Wars Story,2016,133,7.8,686140,8.3
+81,tt0145487,movie,Spider-Man,2002,121,7.4,879150,8.29
+82,tt1270798,movie,X-Men: First Class,2011,131,7.7,723350,8.29
+83,tt1392170,movie,The Hunger Games,2012,142,7.2,1003229,8.28
+84,tt2802144,movie,Kingsman: The Secret Service,2014,129,7.7,715746,8.28
+85,tt5027774,movie,"Three Billboards Outside Ebbing, Missouri",2017,115,8.1,554717,8.26
+86,tt3460252,movie,The Hateful Eight,2015,168,7.8,659271,8.26
+87,tt0450259,movie,Blood Diamond,2006,143,8.0,585767,8.26
+88,tt0796366,movie,Star Trek,2009,127,7.9,620146,8.25
+89,tt0330373,movie,Harry Potter and the Goblet of Fire,2005,157,7.7,681177,8.23
+90,tt0162222,movie,Cast Away,2000,143,7.8,638282,8.22
+91,tt0365748,movie,Shaun of the Dead,2004,99,7.9,593648,8.21
+92,tt0454921,movie,The Pursuit of Happyness,2006,117,8.0,560409,8.21
+93,tt2562232,movie,Birdman or (The Unexpected Virtue of Ignorance),2014,119,7.7,666358,8.2
+94,tt1727824,movie,Bohemian Rhapsody,2018,134,7.9,592395,8.2
+95,tt0033467,movie,Citizen Kane,1941,119,8.3,465781,8.19
+96,tt0099785,movie,Home Alone,1990,103,7.7,652576,8.18
+97,tt0095953,movie,Rain Man,1988,133,8.0,546364,8.18
+98,tt2948356,movie,Zootopia,2016,108,8.0,545965,8.18
+99,tt1187043,movie,3 Idiots,2009,170,8.4,434186,8.18
